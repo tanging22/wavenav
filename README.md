@@ -123,7 +123,7 @@ data/
 
 ### 源码运行
 
-需要 Go ≥ 1.23、Node ≥ 20。
+需要 Go ≥ 1.26、Node ≥ 20。
 
 ```bash
 # 1. 构建前端（产物会写进 internal/web/dist，被 go:embed 打包）
@@ -202,7 +202,7 @@ cd web && npm run dev
 
 ## 技术栈
 
-- **后端**：Go 1.23、Gin、GORM、[glebarez/sqlite](https://github.com/glebarez/sqlite)（纯 Go，免 CGO）、`golang.org/x/crypto/scrypt`
+- **后端**：Go 1.26、Gin、GORM、[glebarez/sqlite](https://github.com/glebarez/sqlite)（纯 Go，免 CGO）、`golang.org/x/crypto/scrypt`
 - **前端**：Vue 3 + TypeScript + Vite + Tailwind CSS 3 + vue-router + sortablejs
 - **部署**：单二进制 / Docker 多阶段构建（镜像 ~25MB）
 

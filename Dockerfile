@@ -10,7 +10,7 @@ COPY web/ ./
 RUN npx vite build --outDir /out/dist --emptyOutDir
 
 # ---------- 2. 后端编译（前端产物 embed 进去） ----------
-FROM golang:1.23-alpine AS build
+FROM golang:1.26-alpine AS build
 
 RUN apk add --no-cache git
 WORKDIR /src
