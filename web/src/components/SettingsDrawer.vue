@@ -448,7 +448,7 @@ function onPickSiteIcon(url: string) {
         </div>
           <div>
             <label class="label">站点标题（主页上显示的名字）</label>
-            <input v-model="draft.title" class="field" maxlength="64" placeholder="鲸鱼导航" />
+            <input v-model="draft.title" class="field" maxlength="64" placeholder="鲸鲸导航" />
           </div>
           <div>
             <label class="label">浏览器标题（标签页上那个，留空就跟站点标题一样）</label>
@@ -928,7 +928,7 @@ function onPickSiteIcon(url: string) {
               rows="9"
               class="field font-mono text-xs"
               spellcheck="false"
-              placeholder="<p>© {year} 鲸鱼导航</p>
+              placeholder="<p>© {year} 鲸鲸导航</p>
 <style>
 .wavenav-foot a { color: #7dd3fc }
 /* seg-btn 没有全局定义，样式一直只在 ItemEditor 的 scoped 里 —— 抽屉里的按钮全靠默认黑字白底

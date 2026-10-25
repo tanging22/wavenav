@@ -261,7 +261,7 @@ export function applyTheme(settings: Settings | null, preview = false) {
   if (tab) document.title = tab
   const link = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
   const fav = settings?.favicon?.trim()
-  if (link) link.href = fav || '/favicon.svg'
+  if (link) link.href = fav || '/favicon.png'
   else if (fav) {
     const el = document.createElement('link')
     el.rel = 'icon'

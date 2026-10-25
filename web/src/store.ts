@@ -145,8 +145,8 @@ export function persistSettingsSoon() {
 /** 后端 401 时前端拿来兜底的默认外观（只为让登录浮层背后有背景） */
 export function fallbackSettings(): Settings {
   return {
-    title: '鲸鱼导航',
-    tabTitle: '鲸鱼导航',
+    title: '鲸鲸导航',
+    tabTitle: '鲸鲸导航',
     logo: '',
     theme: 'dark',
     wallpaper: { type: 'none', src: '', blur: 0, mask: 0.4, brightness: 1, smooth: true },

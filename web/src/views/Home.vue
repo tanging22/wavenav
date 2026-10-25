@@ -307,7 +307,7 @@ async function logout() {
               alt=""
             />
             <div v-else class="grid place-items-center rounded-lg bg-sky-500/20" style="width: calc(var(--bar-icon, 34px) * 0.82); height: calc(var(--bar-icon, 34px) * 0.82)">🐋</div>
-            <h1 class="truncate font-semibold tracking-tight text-[var(--text-main,#f1f5f9)] drop-shadow-[0_1px_6px_rgba(0,0,0,0.35)]" style="font-size: var(--bar-title, 17px)">{{ state.settings?.title || '鲸鱼导航' }}</h1>
+            <h1 class="truncate font-semibold tracking-tight text-[var(--text-main,#f1f5f9)] drop-shadow-[0_1px_6px_rgba(0,0,0,0.35)]" style="font-size: var(--bar-title, 17px)">{{ state.settings?.title || '鲸鲸导航' }}</h1>
           </div>
 
           <!-- 右上角：图标化操作 -->

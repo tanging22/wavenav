@@ -178,8 +178,8 @@ type Docker struct {
 // DefaultSettings 首次启动的默认设置。lanRules 来自 RFC1918 + 常见私有段。
 func DefaultSettings() Settings {
 	return Settings{
-		Title:    "鲸鱼导航",
-		TabTitle: "鲸鱼导航",
+		Title:    "鲸鲸导航",
+		TabTitle: "鲸鲸导航",
 		Theme:    "dark",
 		Wallpaper: Wallpaper{
 			Type:       "none",

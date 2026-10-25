@@ -59,7 +59,7 @@ async function submit() {
             alt=""
           />
           <div v-else class="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-2xl bg-sky-500/20 text-2xl">🐋</div>
-          <h1 class="text-base font-semibold">{{ state.settings?.title || '鲸鱼导航' }}</h1>
+          <h1 class="text-base font-semibold">{{ state.settings?.title || '鲸鲸导航' }}</h1>
           <p class="mt-1 text-[11px] opacity-60">登录后就能编辑自己的导航</p>
         </div>
 
