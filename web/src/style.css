@@ -1,0 +1,257 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    /* 卡片外观（设置里可调，applyTheme 会覆盖） */
+    --card-opacity: 8;
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(255, 255, 255, 0.1);
+    --card-fg: rgba(255, 255, 255, 0.95);
+    --card-fg-muted: rgba(255, 255, 255, 0.55);
+    --card-radius: 18px;
+    --card-blur: 0px;
+    --panel-bg: #141b2f;
+  /* 搜索框单独一层深底：壁纸再亮再暗，白字和一言都读得清 */
+  --search-bg: rgba(9, 13, 25, 0.46);
+  }
+
+  /* 浅色主题：真的浅。浅色适合亮色壁纸 / 无壁纸；
+     暗色壁纸请配深色模式，设置里有提示 */
+  html:not(.dark) {
+    color-scheme: light;
+    --card-opacity: 8;
+    --card-bg: rgba(255, 255, 255, 0.08);
+    --card-border: rgba(15, 23, 42, 0.14);
+    --card-fg: #1e293b;
+    --card-fg-muted: rgba(30, 41, 59, 0.62);
+    --panel-bg: #ffffff;
+    --search-bg: rgba(9, 13, 25, 0.46);
+  }
+  :root {
+    --text-main: #e8eeff;
+    --text-muted: rgba(232, 238, 255, 0.62);
+  }
+  html:not(.dark) {
+    --text-main: #1e293b;
+    --text-muted: rgba(30, 41, 59, 0.72);
+  }
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    /* 刘海屏/小横条：底部别被盖住 */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+      'Microsoft YaHei', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    background: #0b1020;
+    color: #e8eeff;
+  }
+  html:not(.dark) body {
+    background: #eef2f8;
+    color: #1e293b;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(140, 165, 220, 0.35);
+    border-radius: 999px;
+  }
+  html:not(.dark) ::-webkit-scrollbar-thumb {
+    background: rgba(71, 85, 105, 0.3);
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+@layer components {
+  /* 玻璃 / 卡片：统一走变量，磨砂由 --card-blur 控制（默认 0，不磨砂） */
+  .glass {
+    @apply border;
+    border-color: var(--card-border);
+    background-color: var(--card-bg);
+    border-radius: var(--card-radius);
+    -webkit-backdrop-filter: var(--card-backdrop, none);
+    backdrop-filter: var(--card-backdrop, none);
+  }
+  .card-hover {
+    @apply transition duration-200 hover:-translate-y-0.5 hover:shadow-card;
+    /* 磨砂：设置里把「磨砂」拉到 0 时 --card-backdrop 是 none，
+       不设 none 的话浏览器会白开一层合成，视频壁纸下掉帧 */
+    -webkit-backdrop-filter: var(--card-backdrop, none);
+    backdrop-filter: var(--card-backdrop, none);
+    overflow: hidden;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-1 rounded-xl px-3 py-2 text-sm font-medium transition
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply btn bg-sky-500 text-white hover:bg-sky-400 active:bg-sky-600;
+  }
+  .btn-ghost {
+    @apply btn border border-white/10 bg-white/5 hover:bg-white/10;
+  }
+  html:not(.dark) .btn-ghost {
+    @apply border-black/10 bg-black/[0.03] hover:bg-black/[0.06];
+  }
+  .field {
+    @apply w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm outline-none
+      transition placeholder:text-slate-400 focus:border-sky-400/70 focus:bg-white/10;
+    /* 输入框文字跟主题：深色白字、浅色深字（老写法没给色，浅色下继承了外面的白字） */
+    color: var(--text-main, #e8eeff);
+  }
+  html:not(.dark) .field {
+    @apply border-black/10 bg-white/80 text-slate-900 placeholder:text-slate-400 focus:bg-white;
+    color: var(--text-main, #1e293b);
+  }
+  .field-label {
+  font-size: 12px;
+  line-height: 1;
+  color: var(--text-muted);
+  text-align: center;
+  user-select: none;
+}
+
+.label {
+    @apply mb-1.5 block text-xs font-medium;
+    color: var(--text-main, rgba(203, 213, 225, 0.9));
+  }
+  html:not(.dark) .label {
+    color: var(--text-main, #475569);
+  }
+  /* 搜索框：固定一层深底，白字和一言都不怕壁纸亮暗 */
+  .search-bar {
+    transition: background 0.2s, border-color 0.2s;
+  }
+  /* 鼠标放上去先亮一点，让人知道这整条都能点 */
+  .search-bar:hover {
+    background: rgba(9, 13, 25, 0.58);
+    border-color: rgba(255, 255, 255, 0.22);
+  }
+  .search-bar:focus-within {
+    background: rgba(9, 13, 25, 0.66);
+    border-color: rgba(56, 189, 248, 0.6);
+    box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.14);
+  }
+  /* 占位符里放的是一言原文，比普通输入提示更需要看得清 */
+  .search-bar input::placeholder {
+    color: rgba(232, 238, 255, 0.74);
+    opacity: 1;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.55);
+  }
+  /* 不透明的浮层（抽屉、下拉、弹窗），保证内容不被壁纸干扰 */
+  .panel-solid {
+    background-color: var(--panel-bg);
+    border-color: var(--card-border);
+  }
+  .field-code {
+    @apply field h-40 resize-y font-mono text-[12px] leading-relaxed;
+  }
+  .seg {
+    @apply inline-flex flex-wrap gap-1 rounded-xl bg-black/5 p-1 dark:bg-white/5;
+  }
+  .seg > button {
+    @apply rounded-lg px-2.5 py-1 text-xs transition;
+  }
+  .seg > button.on {
+    @apply bg-sky-500 text-white;
+  }
+  .hint {
+    @apply mt-1 text-[11px] leading-relaxed opacity-55;
+    color: var(--text-main, #e8eeff);
+  }
+  html:not(.dark) .hint {
+    color: var(--text-main, #1e293b);
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.18s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+
+html:not(.dark) .panel-solid {
+  background: #ffffff;
+  border-color: rgba(15, 23, 42, 0.1);
+  /* 面板是白底，里面的字必须跟白底走（--text-main 是跟着壁纸的，壁纸深它就是白字） */
+  color: #1e293b;
+}
+.panel-solid .label,
+.panel-solid .hint,
+.panel-solid .field-label,
+.panel-solid .seg-btn {
+  color: inherit !important;
+}
+.panel-solid .seg-btn.on {
+  color: #0369a1;
+  border-color: rgba(3, 105, 161, 0.55);
+  background: rgba(56, 189, 248, 0.15);
+}
+html.dark .panel-solid {
+  background: #141b2f;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #e8eeff;
+}
+html.dark .panel-solid .seg-btn.on {
+  color: #7dd3fc;
+  border-color: rgba(56, 189, 248, 0.55);
+  background: rgba(56, 189, 248, 0.12);
+}
+
+/* select 在深色下的可读性：关闭态文字 + 弹出选项都显式给色 */
+select.field {
+  color: #e8eeff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+html:not(.dark) select.field {
+  color: #1e293b;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+select.field option {
+  background: #141b2f;
+  color: #e8eeff;
+}
+html:not(.dark) select.field option {
+  background: #ffffff;
+  color: #1e293b;
+}
+
+/* 搜索框边框淡淡泛光（设置里可开关；颜色由 JS 按主机 CPU 动态注入，这里只留过渡与兜底） */
+.search-bar.search-glow {
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.26), inset 0 0 10px rgba(56, 189, 248, 0.06);
+  transition: box-shadow 0.35s ease, border-color 0.35s ease;
+}
+.search-bar.search-glow:hover {
+  filter: brightness(1.12);
+}
+.search-bar.search-glow:focus-within {
+  filter: brightness(1.08);
+}
+
+/* 分组拖动中的浮动块（Sortable forceFallback） */
+.group-dragging {
+  opacity: 0.92 !important;
+  pointer-events: none;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
+  transform: rotate(0.6deg);
+}

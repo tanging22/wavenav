@@ -1,0 +1,24 @@
+services:
+  wavenav:
+    build: .
+    image: wavenav:latest
+    container_name: wavenav
+    restart: unless-stopped
+    ports:
+      - "8018:8018"
+    volumes:
+      # 数据库、上传素材、备份都在这里
+      - ./data:/data
+      # 想用「Docker 监控」就解开这两处：挂 socket + 把宿主机 docker 组给进容器
+      # （先在宿主机查组 id：stat -c %g /var/run/docker.sock，把下面的 994 换成查到的值）
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    group_add:
+      - "994"
+    environment:
+      WAVENAV_ADMIN: admin
+      # 第一次启动后请在设置里改掉这个密码
+      WAVENAV_ADMIN_PASSWORD: admin123
+      WAVENAV_SESSION_DAYS: "30"
+      # 容器内的 socket 路径，一般不用改
+      WAVENAV_DOCKER_SOCK: /var/run/docker.sock
+      TZ: Asia/Shanghai

@@ -1,0 +1,13 @@
+node_modules
+**/node_modules
+web/node_modules
+data
+data-dev
+internal/web/dist
+wavenav
+wavenav.exe
+.git
+.gitignore
+*.md
+Dockerfile
+docker-compose.yml

@@ -1,0 +1,29 @@
+# 依赖
+node_modules/
+web/node_modules/
+
+# 构建产物
+wavenav
+*.exe
+internal/web/dist/*
+!internal/web/dist/.keep
+
+# 运行数据
+data/
+data-dev/
+*.db
+*.db-shm
+*.db-wal
+
+# 工具链 / 缓存
+.toolchains/
+
+# 编辑器
+.DS_Store
+.vscode/
+.idea/
+*.log
+
+/wavenav-*
+/.tmp/
+data-smoke/
