@@ -99,7 +99,9 @@ async function boot() {
     }
     if (state.settings?.hitokoto.enabled) startHitokotoLoop()
     startProbeLoop()
-    startStatsLoop()
+    // Docker 状态轮询是登录态接口（/docker/stats 需鉴权），访客（只读）不该发，
+    // 否则未登录也会每 8 秒打一次 401，既浪费又像在"暴露内网接口"。
+    if (!state.readonly) startStatsLoop()
     void initGroupsSortable()
   } catch (e) {
     // 后端刚好在重启（网络失败）时别把页面钉死在默认壳上：3s 后自动重拉，最多 3 次
@@ -242,6 +244,7 @@ async function onLoggedIn() {
   lockVisible.value = lock
   if (state.settings?.hitokoto.enabled) startHitokotoLoop()
   startProbeLoop()
+  startStatsLoop()
   toast('欢迎回来')
 }
 
@@ -257,6 +260,7 @@ async function logout() {
   state.editing = false
   state.settingsOpen = false
   state.itemEditorOpen = false
+  stopStatsLoop()
   try {
     await loadPanel()
     unlocked.value = false

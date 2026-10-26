@@ -43,7 +43,9 @@ func (s *Server) Router() *gin.Engine {
 				"img-src 'self' data: blob: https:; "+
 				"media-src 'self' blob:; "+
 				"font-src 'self' data:; "+
-				"connect-src 'self'; "+
+				// 探测功能要在前端对任意收藏站点发 HEAD/GET 测可达性，必须放开外域 connect。
+				// 这里不能收成 'self'，否则所有延迟小点全部「连不上」（全红）。
+				"connect-src 'self' https: http:; "+
 				"frame-ancestors 'self'; "+
 				"base-uri 'self'; "+
 				"form-action 'self'")
