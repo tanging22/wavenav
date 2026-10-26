@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"os"
@@ -289,14 +290,31 @@ func (s *Server) panel(c *gin.Context) {
 	})
 }
 
-// updateSettings 整体覆盖保存。只做基本校验，字段演进由前端 JSON 决定。
+// updateSettings 字段级合并保存：先读出库里的旧设置，再用请求里「显式带上的字段」覆盖。
+// 这样多标签页/多设备同时在线时，A 页面改 docker.socket、B 页面改搜索引擎，互不覆盖对方刚写的字段。
+// 只做基本校验，字段演进由前端 JSON 决定。
 func (s *Server) updateSettings(c *gin.Context) {
 	u := s.currentUser(c)
-	var in models.Settings
-	if err := c.ShouldBindJSON(&in); err != nil {
+
+	// 先解析成 map，判断请求里到底带了哪些顶层字段（字段级合并的关键）。
+	body, err := io.ReadAll(c.Request.Body)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "msg": "参数不合法"})
 		return
 	}
+	var rawFields map[string]json.RawMessage
+	if err := json.Unmarshal(body, &rawFields); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "msg": "参数不合法"})
+		return
+	}
+
+	// 以库里现存设置为底，请求带了的字段才覆盖。
+	in := s.loadSettings(u.ID)
+	if err := json.Unmarshal(body, &in); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"ok": false, "msg": "参数不合法"})
+		return
+	}
+
 	// 存之前先把上一版整体备一份，手滑或脚本覆盖还能捞回来
 	s.backupSettings(u.ID)
 	if len(in.Title) > 64 {

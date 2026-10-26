@@ -52,7 +52,7 @@ export const api = {
       readonly: boolean
     }>('/panel'),
 
-  saveSettings: (s: Settings) =>
+  saveSettings: (s: Partial<Settings>) =>
     request<{ settings: Settings }>('/settings', { method: 'PUT', body: JSON.stringify(s) }),
 
   changeUsername: (username: string, password: string) =>

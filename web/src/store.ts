@@ -130,7 +130,8 @@ export async function saveSettings(patch: Partial<Settings>, quiet = false) {
 
 let persistTimer: number | null = null
 
-/** 只改过本地状态（比如换了个搜索引擎）时，防抖把整份设置写回后端 */
+/** 只改过本地状态（比如换了个搜索引擎）时，防抖只把「改动的那一个字段」写回后端。
+ *  后端 updateSettings 已改为字段级合并：只传 {search}，不会冲掉别处（如 docker.socket）刚保存的值。 */
 export function persistSettingsSoon() {
   if (!state.settings) return
   applyTheme(state.settings)
@@ -138,7 +139,8 @@ export function persistSettingsSoon() {
   persistTimer = window.setTimeout(() => {
     persistTimer = null
     if (!state.settings) return
-    void api.saveSettings(state.settings).catch((e) => fail(e))
+    // 只提交 search 这一个字段，避免把内存里可能过期的其它字段（docker.socket 等）覆盖回旧值
+    void api.saveSettings({ search: state.settings.search } as Settings).catch((e) => fail(e))
   }, 500)
 }
 
