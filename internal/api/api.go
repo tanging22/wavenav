@@ -32,6 +32,23 @@ func (s *Server) Router() *gin.Engine {
 	}
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
+	// CSP 强制生效（不是 report-only）：默认只放行同源资源 + 明确的数据 URI，
+	// 拦掉一切内联脚本 / 外域脚本。页脚自定义 JS 走 new Function 不受此限制，
+	// 但上传的 SVG 若被 inline 渲染也会被 img-src 白名单挡住执行。
+	r.Use(func(c *gin.Context) {
+		c.Header("Content-Security-Policy",
+			"default-src 'self'; "+
+				"script-src 'self' 'unsafe-eval'; "+
+				"style-src 'self' 'unsafe-inline'; "+
+				"img-src 'self' data: blob: https:; "+
+				"media-src 'self' blob:; "+
+				"font-src 'self' data:; "+
+				"connect-src 'self'; "+
+				"frame-ancestors 'self'; "+
+				"base-uri 'self'; "+
+				"form-action 'self'")
+		c.Next()
+	})
 
 	v1 := r.Group("/api/v1")
 	// 接口一律不许缓存。没有这句，浏览器会按启发式缓存 GET /panel，
@@ -83,6 +100,12 @@ func (s *Server) Router() *gin.Engine {
 	// 上传素材：http.Dir 自带路径清理，不会穿越
 	serveUploads := func(c *gin.Context) {
 		c.Header("Cache-Control", "public, max-age=604800")
+		// SVG 内可嵌 <script>，inline 渲染到同源页面就是 XSS 通道。
+		// 一律强制 attachment 下载，浏览器不会当文档执行；其余图片/视频照常 inline。
+		if strings.HasSuffix(strings.ToLower(c.Request.URL.Path), ".svg") {
+			c.Header("Content-Disposition", "attachment; filename=\"image.svg\"")
+			c.Header("X-Content-Type-Options", "nosniff")
+		}
 		http.StripPrefix("/uploads/", http.FileServer(http.Dir(s.Cfg.UploadDir()))).ServeHTTP(c.Writer, c.Request)
 	}
 	r.GET("/uploads/*filepath", serveUploads)

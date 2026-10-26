@@ -175,6 +175,19 @@ func (s *Server) loadSettings(userID uint) models.Settings {
 	return out
 }
 
+// filterPublicURLs 公开模式下只保留外网可达的地址（default/wan/custom），
+// 内网地址（lan）不出现在访客的响应里，避免泄露内网 IP 拓扑。
+func filterPublicURLs(urls []models.ItemURL) []models.ItemURL {
+	out := make([]models.ItemURL, 0, len(urls))
+	for _, u := range urls {
+		if u.Kind == models.URLLan {
+			continue
+		}
+		out = append(out, u)
+	}
+	return out
+}
+
 // publicOwner 公开模式展示谁的首页：第一个管理员。
 func (s *Server) publicOwner() *models.User {
 	var u models.User
@@ -214,6 +227,14 @@ func (s *Server) panel(c *gin.Context) {
 	if isPublic {
 		// 访客看到的设置里不暴露会引发写操作的字段
 		settings.PublicMode = true
+		// 脱敏：公开模式下绝不把 Docker socket 地址、内网探测地址、内网网段、自定义页脚代码暴露给游客。
+		// 这些是"能直接连到内网 / 能注入同源脚本"的高危信息，登录者才看得到。
+		settings.Docker.Socket = ""
+		settings.Probe.LanProbe = ""
+		settings.LanRules = nil
+		settings.FooterCode = ""
+		settings.Custom.CSS = ""
+		settings.Custom.JS = ""
 	}
 
 	var groups []models.Group
@@ -229,9 +250,14 @@ func (s *Server) panel(c *gin.Context) {
 
 	byGroup := map[uint][]panelItem{}
 	for _, it := range items {
+		urls := it.URLs
+		if isPublic {
+			// 公开模式只给"通用/外网"地址，内网地址（lan）不外泄
+			urls = filterPublicURLs(it.URLs)
+		}
 		byGroup[it.GroupID] = append(byGroup[it.GroupID], panelItem{
 			ID: it.ID, Name: it.Name, Desc: it.Desc, Icon: it.IconURL,
-			Sort: it.Sort, OpenMode: it.OpenMode, LayoutMode: it.LayoutMode, Type: it.Type, Stat: it.Stat, URLs: it.URLs,
+			Sort: it.Sort, OpenMode: it.OpenMode, LayoutMode: it.LayoutMode, Type: it.Type, Stat: it.Stat, URLs: urls,
 		})
 	}
 
