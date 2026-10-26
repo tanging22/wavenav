@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
 	"time"
@@ -189,6 +190,18 @@ func filterPublicURLs(urls []models.ItemURL) []models.ItemURL {
 	return out
 }
 
+// stripFooterCode 公开模式下把自定义页脚里的 <style> / <script> 段剥掉，只留纯 HTML。
+// 备案号、网安备案号这类「必须公开显示」的链接就是纯 HTML，游客要能看到；
+// 而 <style>/<script> 是代码注入（XSS / 同源执行），登录者才看得到。
+// 前端 footerMarkup 本来也只把 html 段塞进 v-html，CSS/JS 单独走 applyFooterCode，
+// 所以后端剥掉 style/script 后，访客端行为与「只读」语义完全一致。
+func stripFooterCode(code string) string {
+	// 与前端 splitFooterCode 的正则对齐：非贪婪匹配成对的 <style>…</style> / <script>…</script>
+	out := regexp.MustCompile(`(?is)<style[^>]*>.*?</style>`).ReplaceAllString(code, "")
+	out = regexp.MustCompile(`(?is)<script[^>]*>.*?</script>`).ReplaceAllString(out, "")
+	return strings.TrimSpace(out)
+}
+
 // publicOwner 公开模式展示谁的首页：第一个管理员。
 func (s *Server) publicOwner() *models.User {
 	var u models.User
@@ -233,7 +246,8 @@ func (s *Server) panel(c *gin.Context) {
 		settings.Docker.Socket = ""
 		settings.Probe.LanProbe = ""
 		settings.LanRules = nil
-		settings.FooterCode = ""
+		// 页脚：保留纯 HTML（备案号/网安备案必须公开可见），只剥掉 <style>/<script> 注入段。
+		settings.FooterCode = stripFooterCode(settings.FooterCode)
 		settings.Custom.CSS = ""
 		settings.Custom.JS = ""
 	}
