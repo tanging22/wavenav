@@ -61,36 +61,17 @@
     background: #eef2f8;
     color: #1e293b;
   }
-  /* 滚动条：覆盖式（overlay），悬浮在内容上、不占布局宽度，平时淡、悬停才显形 */
+  /* 滚动条：彻底隐藏（滚动靠滚轮/触摸/拖拽手势，不留任何视觉痕迹）。
+     之前做成"透明 thumb"会透出 body 深色背景，在亮色壁纸上变成一条突兀的深色竖条，
+     看着像"黑色边框"——所以直接 display:none 干净利落。 */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    display: none;
+    width: 0;
+    height: 0;
   }
-  ::-webkit-scrollbar-thumb {
-    background: transparent;
-    border-radius: 999px;
-    transition: background 0.2s ease;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(140, 165, 220, 0.45);
-  }
-  html:not(.dark) ::-webkit-scrollbar-thumb:hover {
-    background: rgba(71, 85, 105, 0.4);
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  /* 覆盖式：滚动容器用 overlay，Firefox 用 scrollbar-width 细 + 透明，滚过才显 */
-  .overflow-y-auto,
-  .overflow-x-auto,
-  .overflow-auto {
-    scrollbar-width: thin;
-    scrollbar-color: transparent transparent;
-  }
-  .overflow-y-auto:hover,
-  .overflow-x-auto:hover,
-  .overflow-auto:hover {
-    scrollbar-color: rgba(140, 165, 220, 0.45) transparent;
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* 旧 Edge / IE */
   }
 }
 
