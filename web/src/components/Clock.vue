@@ -12,12 +12,24 @@ function tick() {
   now.value = new Date()
 }
 
+// 对齐到整秒边界再走 1s 节拍：避免从「第 0.73 秒」开始，每次显示秒都会跳。
+// 关掉秒显示时退化成对齐到下一分钟（主页时钟只到分，1 秒刷一次是白费）。
+function schedule() {
+  const d = new Date()
+  const stepMs = showSeconds.value ? 1000 : 60000
+  const delay = stepMs - (d.getMilliseconds() + (showSeconds.value ? 0 : d.getSeconds() * 1000)) + 30
+  timer = window.setTimeout(() => {
+    tick()
+    schedule()
+  }, Math.max(30, delay))
+}
+
 onMounted(() => {
   tick()
-  timer = window.setInterval(tick, 1000)
+  schedule()
 })
 onBeforeUnmount(() => {
-  if (timer) window.clearInterval(timer)
+  if (timer) window.clearTimeout(timer)
 })
 
 const week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']

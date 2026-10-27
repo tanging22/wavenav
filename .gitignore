@@ -27,3 +27,6 @@ data-dev/
 /wavenav-*
 /.tmp/
 data-smoke/
+
+# 视频转码产物（1080p 压缩版 + 4K 备份）
+/compressed/

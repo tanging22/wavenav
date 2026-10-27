@@ -24,14 +24,21 @@ const dateText = computed(() => {
 })
 const hello = computed(() => greeting(lock.value?.greet))
 
-onMounted(() => {
-  timer = window.setInterval(() => {
+// 锁屏只显示到「分」，没有秒 —— 每 1 秒刷一次是白费；对齐到下一分钟边界才刷新。
+// 秒针整点后最多 1 秒误差，但省掉每分钟 59 次无意义的重渲染。
+function alignToNextMinute() {
+  const ms = new Date()
+  const delay = 60000 - (ms.getSeconds() * 1000 + ms.getMilliseconds()) + 50
+  timer = window.setTimeout(() => {
     now.value = new Date()
-  }, 1000)
-})
+    alignToNextMinute()
+  }, delay)
+}
+
+onMounted(() => alignToNextMinute())
 
 onBeforeUnmount(() => {
-  if (timer !== null) clearInterval(timer)
+  if (timer !== null) clearTimeout(timer)
   if (leavingTimer !== null) clearTimeout(leavingTimer)
 })
 

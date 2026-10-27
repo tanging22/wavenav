@@ -61,19 +61,36 @@
     background: #eef2f8;
     color: #1e293b;
   }
+  /* 滚动条：覆盖式（overlay），悬浮在内容上、不占布局宽度，平时淡、悬停才显形 */
   ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(140, 165, 220, 0.35);
+    background: transparent;
     border-radius: 999px;
+    transition: background 0.2s ease;
   }
-  html:not(.dark) ::-webkit-scrollbar-thumb {
-    background: rgba(71, 85, 105, 0.3);
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(140, 165, 220, 0.45);
+  }
+  html:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background: rgba(71, 85, 105, 0.4);
   }
   ::-webkit-scrollbar-track {
     background: transparent;
+  }
+  /* 覆盖式：滚动容器用 overlay，Firefox 用 scrollbar-width 细 + 透明，滚过才显 */
+  .overflow-y-auto,
+  .overflow-x-auto,
+  .overflow-auto {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .overflow-y-auto:hover,
+  .overflow-x-auto:hover,
+  .overflow-auto:hover {
+    scrollbar-color: rgba(140, 165, 220, 0.45) transparent;
   }
 }
 
